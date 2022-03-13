@@ -2,10 +2,9 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.bnorm.power/kotlin-power-assert-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.bnorm.power/kotlin-power-assert-plugin)
 
-Kotlin Compiler Plugin which high-jacks Kotlin assert function calls and
-transforms them similar to [Groovy's Power Assert feature][groovy-power-assert].
-This plugin uses the IR backend for the Kotlin compiler and supports all
-platforms: JVM, JS, and Native!
+Kotlin Compiler Plugin which high-jacks Kotlin assert function calls and transforms them similar
+to [Groovy's Power Assert feature][groovy-power-assert]. This plugin uses the IR backend for the Kotlin compiler and
+supports all platforms: JVM, JS, and Native!
 
 ## Example
 
@@ -37,8 +36,7 @@ java.lang.AssertionError: Incorrect length
 	at <stacktrace>
 ```
 
-With `kotlin-power-assert` included, the error message for the previous example
-will be transformed:
+With `kotlin-power-assert` included, the error message for the previous example will be transformed:
 
 ```text
 java.lang.AssertionError: Incorrect length
@@ -70,21 +68,18 @@ assert(
 
 ## Beyond Assert
 
-The plugin by default will transform `assert` function calls but can also
-transform other functions like `require`, `check`, `assertTrue`, and many, many
-more.
+The plugin by default will transform `assert` function calls but can also transform other functions like `require`
+, `check`, `assertTrue`, and many, many more.
 
-Functions which can be transformed have specific requirements. A function must
-have a form which allows taking a `String` or `() -> String` value as the last
-parameter. This can either be as an overload or the original function.
+Functions which can be transformed have specific requirements. A function must have a form which allows taking
+a `String` or `() -> String` value as the last parameter. This can either be as an overload or the original function.
 
 For example, the `assert` function has 2 definitions:
 * `fun assert(value: Boolean)`
 * `fun assert(value: Boolean, lazyMessage: () -> Any)`
 
-If the first function definition is called, it will be transformed into calling
-the second definition with the diagram message supplied as the last parameter.
-If the second definition is called, it will be transformed into calling the same
+If the first function definition is called, it will be transformed into calling the second definition with the diagram
+message supplied as the last parameter. If the second definition is called, it will be transformed into calling the same
 function but with the diagram message appended to the last parameter.
 
 This transformed function call doesn't need to throw an exception either. See
@@ -102,8 +97,8 @@ plugins {
 }
 ```
 
-The Gradle plugin allows configuring the functions which should be transformed
-with a list of fully-qualified function names.
+The Gradle plugin allows configuring the functions which should be transformed with a list of fully-qualified function
+names.
 
 ```kotlin
 // Kotlin DSL
@@ -121,30 +116,18 @@ kotlinPowerAssert {
 
 ## Compatibility
 
-The Kotlin compiler plugin API is unstable and each new version of Kotlin can
-bring breaking changes to the APIs used by this compiler plugin. Make sure you
-are using the correct version of this plugin for whatever version of Kotlin
-used. Check the table below to find when support for a particular version of
-Kotlin was first introduced. If a version of Kotlin or this plugin is not listed
-it can be assumed to maintain compatibility with the next oldest version listed.
+The Kotlin compiler plugin API is unstable and each new version of Kotlin can bring breaking changes to the APIs used by
+this compiler plugin. The Gradle plugin will automatically attempt to downgrade the compiler plugin artifact version if
+the Gradle plugin is able to determine the current Kotlin compiler version. This way you can always use the latest
+version of the Gradle plugin without worrying which version of Kotlin you are using.
 
-| Kotlin Version | Plugin Version |
-| -------------- | -------------- |
-| 1.3.60         | 0.1.0          |
-| 1.3.70         | 0.3.0          |
-| 1.4.0          | 0.4.0          |
-| 1.4.20         | 0.6.0          |
-| 1.4.30         | 0.7.0          |
-| 1.5.0          | 0.8.0          |
-| 1.5.10         | 0.9.0          |
-| 1.5.20         | 0.10.0         |
-| 1.6.0          | 0.11.0         |
+Note that all new features and bug fixes for the plugin will not be back-ported to older Kotlin versions. For the best
+experience with this compiler plugin, make sure to be running the latest stable version of Kotlin.
 
 ## Kotlin IR
 
-This plugin supports all IR based compiler backends: JVM, JS, and Native! Only
-Kotlin/JS still uses the legacy compiler backend by default, use the following
-to make sure IR is enabled.
+This plugin supports all IR based compiler backends: JVM, JS, and Native! Only Kotlin/JS still uses the legacy compiler
+backend by default, use the following to make sure IR is enabled.
 
 ```kotlin
 target {
@@ -157,8 +140,7 @@ target {
 
 ### Function Call Tracing
 
-Similar to Rust's `dbg!` macro, functions which take arbitrary parameters can
-be transformed. For example:
+Similar to Rust's `dbg!` macro, functions which take arbitrary parameters can be transformed. For example:
 
 ```kotlin
 fun <T> dbg(value: T): T = value
@@ -207,8 +189,7 @@ assertSoftly {
 }
 ```
 
-A working example is [available][soft-assert-example] in this repository in the
-sample directory.
+A working example is [available][soft-assert-example] in this repository in the sample directory.
 
 [groovy-power-assert]: https://groovy-lang.org/testing.html#_power_assertions
 [kotlin-power-assert-gradle]: https://plugins.gradle.org/plugin/com.bnorm.power.kotlin-power-assert
