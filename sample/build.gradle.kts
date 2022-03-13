@@ -1,5 +1,5 @@
 plugins {
-  kotlin("multiplatform") version "1.6.0"
+  kotlin("multiplatform") version "1.6.20-RC"
   id("com.bnorm.power.kotlin-power-assert") version "0.11.0"
 }
 
@@ -15,8 +15,10 @@ kotlin {
   }
 
   val osName = System.getProperty("os.name")
+  val osArch = System.getProperty("os.arch")
   when {
     "Windows" in osName -> mingwX64("native")
+    "Mac OS" in osName && "aarch64" in osArch -> macosArm64("native")
     "Mac OS" in osName -> macosX64("native")
     else -> linuxX64("native")
   }
