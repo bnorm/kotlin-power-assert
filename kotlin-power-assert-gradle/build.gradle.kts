@@ -10,6 +10,7 @@ plugins {
 dependencies {
   implementation(kotlin("stdlib"))
   implementation(kotlin("gradle-plugin-api"))
+  compileOnly(kotlin("gradle-plugin"))
 }
 
 buildConfig {
