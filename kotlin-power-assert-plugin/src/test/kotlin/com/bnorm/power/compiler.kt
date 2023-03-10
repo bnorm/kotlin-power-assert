@@ -20,6 +20,7 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.name.FqName
 import java.io.OutputStream
 import java.lang.reflect.InvocationTargetException
@@ -30,6 +31,7 @@ private val DEFAULT_COMPONENT_REGISTRARS = arrayOf(
   PowerAssertComponentRegistrar(setOf(FqName("kotlin.assert")))
 )
 
+@OptIn(ExperimentalCompilerApi::class)
 fun compile(
   list: List<SourceFile>,
   vararg plugins: ComponentRegistrar = DEFAULT_COMPONENT_REGISTRARS
@@ -51,6 +53,7 @@ fun compile(
   }.compile()
 }
 
+@OptIn(ExperimentalCompilerApi::class)
 fun executeAssertion(
   @Language("kotlin") source: String,
   vararg plugins: ComponentRegistrar = DEFAULT_COMPONENT_REGISTRARS
@@ -75,6 +78,7 @@ fun executeAssertion(
   }
 }
 
+@OptIn(ExperimentalCompilerApi::class)
 fun executeMainAssertion(mainBody: String) = executeAssertion(
   """
 fun main() {
@@ -83,6 +87,7 @@ fun main() {
 """
 )
 
+@OptIn(ExperimentalCompilerApi::class)
 fun assertMessage(
   @Language("kotlin") source: String,
   message: String,

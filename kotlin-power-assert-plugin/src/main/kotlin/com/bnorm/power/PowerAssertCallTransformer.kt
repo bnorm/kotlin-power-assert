@@ -28,6 +28,7 @@ import com.bnorm.power.diagram.buildDiagramNestingNullable
 import com.bnorm.power.diagram.buildTree
 import com.bnorm.power.diagram.irDiagramString
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
+import org.jetbrains.kotlin.backend.common.extensions.FirIncompatiblePluginAPI
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
@@ -63,7 +64,7 @@ import org.jetbrains.kotlin.ir.util.isFunctionOrKFunction
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.util.parentClassOrNull
 import org.jetbrains.kotlin.name.FqName
-
+@OptIn(FirIncompatiblePluginAPI::class)
 class PowerAssertCallTransformer(
   private val sourceFile: SourceFile,
   private val context: IrPluginContext,
