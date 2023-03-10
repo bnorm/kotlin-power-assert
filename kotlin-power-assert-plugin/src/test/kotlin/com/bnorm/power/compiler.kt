@@ -34,7 +34,7 @@ private val DEFAULT_COMPONENT_REGISTRARS = arrayOf(
 @OptIn(ExperimentalCompilerApi::class)
 fun compile(
   list: List<SourceFile>,
-  vararg plugins: ComponentRegistrar = DEFAULT_COMPONENT_REGISTRARS
+  vararg componentRegistrars: ComponentRegistrar = DEFAULT_COMPONENT_REGISTRARS
 ): KotlinCompilation.Result {
   return KotlinCompilation().apply {
     sources = list
@@ -48,7 +48,7 @@ fun compile(
         // black hole all writes
       }
     }
-    compilerPlugins = plugins.toList()
+    this.componentRegistrars = componentRegistrars.toList()
     inheritClassPath = true
   }.compile()
 }
