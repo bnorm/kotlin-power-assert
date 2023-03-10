@@ -32,7 +32,8 @@ val KEY_FUNCTIONS = CompilerConfigurationKey<List<String>>("fully-qualified func
 class PowerAssertComponentRegistrar(
   private val functions: Set<FqName>
 ) : ComponentRegistrar {
-  @Suppress("unused") constructor() : this(emptySet()) // Used by service loader
+  @Suppress("unused")
+  constructor() : this(emptySet()) // Used by service loader
 
   override fun registerProjectComponents(
     project: MockProject,
@@ -45,5 +46,3 @@ class PowerAssertComponentRegistrar(
     IrGenerationExtension.registerExtension(project, PowerAssertIrGenerationExtension(messageCollector, functions.toSet()))
   }
 }
-
-

@@ -96,8 +96,9 @@ fun getMainResult(main: Method): String {
     fail("main did not throw expected exception")
   } catch (t: InvocationTargetException) {
     with(t.cause) {
-      if (this is RuntimeException && message != null && message!!.startsWith("result:"))
+      if (this is RuntimeException && message != null && message!!.startsWith("result:")) {
         return message!!.substringAfter("result:")
+      }
     }
     throw t.cause!!
   }

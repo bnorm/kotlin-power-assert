@@ -105,13 +105,16 @@ private fun IrBuilderWithScope.nest(
   val children = node.children
   val child = children[index]
   return buildExpression(child, variables) { argument, newVariables ->
-    if (index + 1 == children.size) call(argument, newVariables) // last expression, result is false
-    else irIfThenElse(
-      context.irBuiltIns.anyType,
-      argument,
-      nest(node, index + 1, newVariables, call), // more expressions, continue nesting
-      call(irFalse(), newVariables), // short-circuit result to false
-    )
+    if (index + 1 == children.size) {
+      call(argument, newVariables) // last expression, result is false
+    } else {
+      irIfThenElse(
+        context.irBuiltIns.anyType,
+        argument,
+        nest(node, index + 1, newVariables, call), // more expressions, continue nesting
+        call(irFalse(), newVariables) // short-circuit result to false
+      )
+    }
   }
 }
 
@@ -140,12 +143,15 @@ private fun IrBuilderWithScope.nest(
   val children = node.children
   val child = children[index]
   return buildExpression(child, variables) { argument, newVariables ->
-    if (index + 1 == children.size) call(argument, newVariables) // last expression, result is false
-    else irIfThenElse(
-      context.irBuiltIns.anyType,
-      argument,
-      call(irTrue(), newVariables), // short-circuit result to true
-      nest(node, index + 1, newVariables, call), // more expressions, continue nesting
-    )
+    if (index + 1 == children.size) {
+      call(argument, newVariables) // last expression, result is false
+    } else {
+      irIfThenElse(
+        context.irBuiltIns.anyType,
+        argument,
+        call(irTrue(), newVariables), // short-circuit result to true
+        nest(node, index + 1, newVariables, call) // more expressions, continue nesting
+      )
+    }
   }
 }

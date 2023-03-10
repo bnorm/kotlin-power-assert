@@ -57,7 +57,7 @@ fun executeAssertion(
 ): String {
   val result = compile(
     listOf(SourceFile.kotlin("main.kt", source, trimIndent = false)),
-    *plugins,
+    *plugins
   )
   assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
 
