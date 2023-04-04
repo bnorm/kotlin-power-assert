@@ -41,3 +41,12 @@ tasks.withType<KotlinCompile> {
 tasks.named("publish") {
   dependsOn("publishPlugins")
 }
+
+publishing {
+  repositories {
+    maven {
+      name = "test"
+      url = uri(rootProject.layout.buildDirectory.dir("localMaven"))
+    }
+  }
+}
