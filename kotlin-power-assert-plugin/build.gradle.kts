@@ -105,7 +105,7 @@ publishing {
     }
     maven {
       name = "test"
-      setUrl("file://${rootProject.buildDir}/localMaven")
+      url = uri(rootProject.layout.buildDirectory.dir("localMaven"))
     }
   }
 }
