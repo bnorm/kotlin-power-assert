@@ -37,6 +37,15 @@ gradlePlugin {
   }
 }
 
+afterEvaluate {
+  // com.gradle.plugin-publish uses afterEvaluate to create everything.
+  // Note: misleading name, this is actually `PublishPlugin.createAndSetupJarSourcesTask()`.
+  tasks.named("publishPluginJar") {
+    // https://github.com/gmazzo/gradle-buildconfig-plugin/pull/38
+    dependsOn(tasks.generateBuildConfig)
+  }
+}
+
 tasks.withType<KotlinCompile> {
   kotlinOptions.jvmTarget = "1.8"
 }
