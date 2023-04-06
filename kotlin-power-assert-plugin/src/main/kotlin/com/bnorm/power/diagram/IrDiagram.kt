@@ -54,7 +54,7 @@ fun IrBuilderWithScope.irDiagramString(
     if (prefix != null) addArgument(prefix)
 
     for ((row, rowSource) in rows.withIndex()) {
-      val rowValues = valuesByRow[row]?.let { values -> values.sortedBy { it.indent } } ?: emptyList()
+      val rowValues = valuesByRow[row].orEmpty().sortedBy { it.indent }
       val indentations = rowValues.map { it.indent }
 
       addArgument(
@@ -95,7 +95,6 @@ private data class ValueDisplay(
   val value: IrVariable,
   val indent: Int,
   val row: Int,
-  val source: String,
 )
 
 private fun IrTemporaryVariable.toValueDisplay(
@@ -120,7 +119,7 @@ private fun IrTemporaryVariable.toValueDisplay(
     indent = columnOffset - (prefix.lastIndexOf('\n') + 1)
   }
 
-  return ValueDisplay(temporary, indent, row, source)
+  return ValueDisplay(temporary, indent, row)
 }
 
 /**
