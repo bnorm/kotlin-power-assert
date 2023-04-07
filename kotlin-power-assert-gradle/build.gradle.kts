@@ -1,11 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jmailen.gradle.kotlinter.tasks.FormatTask
+import org.jmailen.gradle.kotlinter.tasks.LintTask
 
 plugins {
   id("java-gradle-plugin")
   kotlin("jvm")
   id("com.gradle.plugin-publish")
   id("com.github.gmazzo.buildconfig")
-//  id("org.jmailen.kotlinter")
+  id("org.jmailen.kotlinter")
 }
 
 dependencies {
@@ -55,3 +57,14 @@ publishing {
     }
   }
 }
+tasks.register<FormatTask>("formatBuildscripts") {
+  group = "verification"
+  source(layout.projectDirectory.asFileTree.matching { include("**.kts") })
+}
+tasks.register<LintTask>("lintBuildscripts") {
+  group = "verification"
+  source(layout.projectDirectory.asFileTree.matching { include("**.kts") })
+}
+
+tasks.named("lintKotlin") { dependsOn("lintBuildscripts") }
+tasks.named("formatKotlin") { dependsOn("formatBuildscripts") }
