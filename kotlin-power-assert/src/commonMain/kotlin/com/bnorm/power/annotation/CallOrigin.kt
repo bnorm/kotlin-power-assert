@@ -8,9 +8,14 @@ class CallOrigin(
 ) {
   companion object {
     /**
-     * ***Only callable within [`@Diagrammed`][Introspected] annotated functions.***
+     * Always returns `null`. Functions annotated with [`@Introspected`][Introspected] have this function replaced by a
+     * parameter within a generated function, while the original function remains unchanged.
+     *
+     * Calls to [Introspected] functions will then be replaced with the generated function by the `kotlin-power-assert`
+     * compiler plugin. If the plugin is not added, these function calls will not be replaced, so the original function
+     * ***must*** be able handle a `null` value.
      */
-    fun get(): CallOrigin = error("kotlin-power-assert plugin must be applied to project")
+    fun get(): CallOrigin? = null
   }
 
   sealed class Node {
@@ -106,7 +111,7 @@ private fun getResultString(node: CallOrigin.Node): String {
 }
 
 private fun StringBuilder.indent(
-  indentations: List<Int>,
+  indentations: List<Int> = emptyList(),
   indent: Int
 ) {
   var last = -1
