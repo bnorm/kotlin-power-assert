@@ -6,13 +6,20 @@ import kotlin.test.assertEquals
 class CallOriginTest {
   @Test
   fun test_simple_diagram() {
-    val source = "assert(1 == 2)"
-    val parameter = CallOrigin.Node.Branch(
-      offset = 9, result = false, name = "EQEQ",
-      children = listOf(
-        CallOrigin.Node.Value(7, 1, const = false),
-        CallOrigin.Node.Value(12, 2, const = false)
-      )
+    val origin = CallOrigin(
+      source = "assert(1 == 2)",
+      parameters = listOf(
+        CallOrigin.Node.Branch(
+          source = "1 == 2",
+          offset = 9,
+          result = false,
+          name = "EQEQ",
+          children = listOf(
+            CallOrigin.Node.Value("1", 7, 1, const = false),
+            CallOrigin.Node.Value("2", 12, 2, const = false),
+          ),
+        ),
+      ),
     )
 
     assertEquals(
@@ -22,20 +29,27 @@ class CallOriginTest {
                | |  2
                | false
                1
-        """.trimIndent(),
-      actual = CallOrigin(source, parameters = listOf(parameter)).toSimpleDiagram()
+      """.trimIndent(),
+      actual = origin.toSimpleDiagram(),
     )
   }
 
   @Test
   fun test_simple_diagram_with_constants() {
-    val source = "assert(1 == 2)"
-    val parameter = CallOrigin.Node.Branch(
-      offset = 9, result = false, name = "EQEQ",
-      children = listOf(
-        CallOrigin.Node.Value(7, 1, const = true),
-        CallOrigin.Node.Value(12, 2, const = true)
-      )
+    val origin = CallOrigin(
+      source = "assert(1 == 2)",
+      parameters = listOf(
+        CallOrigin.Node.Branch(
+          source = "1 == 2",
+          offset = 9,
+          result = false,
+          name = "EQEQ",
+          children = listOf(
+            CallOrigin.Node.Value("1", 7, 1, const = true),
+            CallOrigin.Node.Value("2", 12, 2, const = true),
+          ),
+        ),
+      ),
     )
 
     assertEquals(
@@ -44,19 +58,26 @@ class CallOriginTest {
                  |
                  false
       """.trimIndent(),
-      actual = CallOrigin(source, parameters = listOf(parameter)).toSimpleDiagram()
+      actual = origin.toSimpleDiagram(),
     )
   }
 
   @Test
   fun test_simple_diagram_with_strings() {
-    val source = "assert(\"Hello\" == \"World\")"
-    val parameter = CallOrigin.Node.Branch(
-      offset = 15, result = false, name = "EQEQ",
-      children = listOf(
-        CallOrigin.Node.Value(7, "Hello", const = true),
-        CallOrigin.Node.Value(17, "World", const = true)
-      )
+    val origin = CallOrigin(
+      source = "assert(\"Hello\" == \"World\")",
+      parameters = listOf(
+        CallOrigin.Node.Branch(
+          source = "\"Hello\" == \"World\"",
+          offset = 15,
+          result = false,
+          name = "EQEQ",
+          children = listOf(
+            CallOrigin.Node.Value("\"Hello\"", 7, "Hello", const = true),
+            CallOrigin.Node.Value("\"World\"", 17, "World", const = true),
+          ),
+        ),
+      ),
     )
 
     // TODO what should the diff look like?
@@ -66,19 +87,26 @@ class CallOriginTest {
                        |
                        false
       """.trimIndent(),
-      actual = CallOrigin(source, parameters = listOf(parameter)).toSimpleDiagram()
+      actual = origin.toSimpleDiagram(),
     )
   }
 
   @Test
   fun test_simple_diagram_with_lists() {
-    val source = "assert(listOf(1, 2, 3) == listOf(1, 3, 4))"
-    val parameter = CallOrigin.Node.Branch(
-      offset = 23, result = false, name = "EQEQ",
-      children = listOf(
-        CallOrigin.Node.Value(7, listOf(1, 2, 3)),
-        CallOrigin.Node.Value(26, listOf(1, 3, 4))
-      )
+    val origin = CallOrigin(
+      source = "assert(listOf(1, 2, 3) == listOf(1, 3, 4))",
+      parameters = listOf(
+        CallOrigin.Node.Branch(
+          source = "listOf(1, 2, 3) == listOf(1, 3, 4)",
+          offset = 23,
+          result = false,
+          name = "EQEQ",
+          children = listOf(
+            CallOrigin.Node.Value("listOf(1, 2, 3)", 7, listOf(1, 2, 3)),
+            CallOrigin.Node.Value("listOf(1, 3, 4)", 26, listOf(1, 3, 4)),
+          ),
+        ),
+      ),
     )
 
     // TODO what should the diff look like?
@@ -90,19 +118,26 @@ class CallOriginTest {
                |               false
                [1, 2, 3]
       """.trimIndent(),
-      actual = CallOrigin(source, parameters = listOf(parameter)).toSimpleDiagram()
+      actual = origin.toSimpleDiagram(),
     )
   }
 
   @Test
   fun test_simple_diagram_with_sets() {
-    val source = "assert(setOf(1, 2, 3) == setOf(1, 3, 4))"
-    val parameter = CallOrigin.Node.Branch(
-      offset = 22, result = false, name = "EQEQ",
-      children = listOf(
-        CallOrigin.Node.Value(7, setOf(1, 2, 3)),
-        CallOrigin.Node.Value(25, setOf(1, 3, 4))
-      )
+    val origin = CallOrigin(
+      source = "assert(setOf(1, 2, 3) == setOf(1, 3, 4))",
+      parameters = listOf(
+        CallOrigin.Node.Branch(
+          source = "setOf(1, 2, 3) == setOf(1, 3, 4)",
+          offset = 22,
+          result = false,
+          name = "EQEQ",
+          children = listOf(
+            CallOrigin.Node.Value("setOf(1, 2, 3)", 7, setOf(1, 2, 3)),
+            CallOrigin.Node.Value("setOf(1, 3, 4)", 25, setOf(1, 3, 4)),
+          ),
+        ),
+      ),
     )
 
     assertEquals(
@@ -113,7 +148,7 @@ class CallOriginTest {
                |              missing: [4], extra: [2]
                [1, 2, 3]
       """.trimIndent(),
-      actual = CallOrigin(source, parameters = listOf(parameter)).toSimpleDiagram()
+      actual = origin.toSimpleDiagram(),
     )
   }
 }

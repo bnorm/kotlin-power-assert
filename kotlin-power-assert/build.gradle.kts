@@ -1,15 +1,10 @@
 plugins {
   kotlin("multiplatform")
+  id("org.jmailen.kotlinter")
 }
 
 kotlin {
-  jvm {
-    compilations.all {
-      kotlinOptions {
-        kotlinOptions.jvmTarget = "1.8"
-      }
-    }
-  }
+  jvm()
   js(IR) {
     browser()
     nodejs()
