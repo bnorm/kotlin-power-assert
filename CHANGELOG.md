@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+## Version 0.12.2
+
+_2023-04-09_
+
+**Fixes**
+* Correctly align `in` operator. (#95).
+
 ## Version 0.12.1
 
 _2023-04-08_
