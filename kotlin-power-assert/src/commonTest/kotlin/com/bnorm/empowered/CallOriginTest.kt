@@ -1,4 +1,4 @@
-package com.bnorm.power.annotation
+package com.bnorm.empowered
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,9 +26,8 @@ class CallOriginTest {
       expected = """
         assert(1 == 2)
                | |  |
-               | |  2
-               | false
-               1
+               1 |  2
+                 false
       """.trimIndent(),
       actual = origin.toSimpleDiagram(),
     )
@@ -114,9 +113,8 @@ class CallOriginTest {
       expected = """
         assert(listOf(1, 2, 3) == listOf(1, 3, 4))
                |               |  |
-               |               |  [1, 3, 4]
-               |               false
-               [1, 2, 3]
+               [1, 2, 3]       |  [1, 3, 4]
+                               false
       """.trimIndent(),
       actual = origin.toSimpleDiagram(),
     )
@@ -144,9 +142,61 @@ class CallOriginTest {
       expected = """
         assert(setOf(1, 2, 3) == setOf(1, 3, 4))
                |              |  |
-               |              |  [1, 3, 4]
-               |              missing: [4], extra: [2]
-               [1, 2, 3]
+               [1, 2, 3]      |  [1, 3, 4]
+                              missing: [4], extra: [2]
+      """.trimIndent(),
+      actual = origin.toSimpleDiagram(),
+    )
+  }
+
+  @Test
+  fun test_diagram_compaction() {
+    val origin = CallOrigin(
+      source = "assert(name.length == otherName.length)",
+      parameters = listOf(
+        CallOrigin.Node.Branch(
+          source = "name.length == otherName.length",
+          offset = 19,
+          result = false,
+          name = "EQEQ",
+          children = listOf(
+            CallOrigin.Node.Branch(
+              source = "name.length",
+              offset = 12,
+              result = 5,
+              name = "length",
+              children = listOf(
+                CallOrigin.Node.Value(
+                  source = "name",
+                  offset = 7,
+                  result = "Smith",
+                ),
+              ),
+            ),
+            CallOrigin.Node.Branch(
+              source = "otherName.length",
+              offset = 32,
+              result = 3,
+              name = "length",
+              children = listOf(
+                CallOrigin.Node.Value(
+                  source = "otherName",
+                  offset = 22,
+                  result = "Doe",
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    )
+
+    assertEquals(
+      expected = """
+        assert(name.length == otherName.length)
+               |    |      |  |         |
+               |    5      |  Doe       3
+               Smith       false
       """.trimIndent(),
       actual = origin.toSimpleDiagram(),
     )

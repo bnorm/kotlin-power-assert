@@ -1,4 +1,4 @@
-package com.bnorm.power.annotation
+package com.bnorm.empowered
 
 import kotlin.jvm.JvmSynthetic
 
@@ -10,34 +10,35 @@ class CallOrigin(
 ) {
   companion object {
     /**
-     * Always returns `null`. Functions annotated with [`@Introspected`][Introspected] will have calls to this function
-     * replaced by a parameter within a generated function, while the original function will have calls replaced with a
-     * constant `null`.
+     * Always returns `null`. Functions annotated with [Empowered] will have calls to this function replaced by a
+     * parameter within a generated function, while the original function will have calls replaced with a constant
+     * `null`.
      *
-     * Calls to [Introspected] functions will then be replaced with the generated function by the `kotlin-power-assert`
+     * Calls to [Empowered] functions will then be replaced with the generated function by the `kotlin-power-assert`
      * compiler plugin. If the plugin is not added, these function calls will not be replaced, so the original function
      * ***must*** be able handle a `null` value.
      */
     fun get(): CallOrigin? = null
 
     /**
-     * Used to introspect an expression. This allows not only to get the result of an expression, but also the source
-     * code and [Node] tree of the expression.
+     * Used to get a [CallOrigin.Node] for the specified expression. This allows not only to get the
+     * [result of the expression][CallOrigin.Node.result], but also the [source code][CallOrigin.Node.source] and tree
+     * of the expression.
      *
      * This function will ***always*** fail if the `kotlin-power-assert` compiler plugin is not applied to the project.
      */
-    @Introspected
-    fun <T> of(expression: T): Pair<T, Node> =
+    @Empowered
+    fun <T> of(expression: T): Node =
       error("kotlin-power-assert plugin must be applied to project")
 
     /**
-     * Manually generated introspected delegate for [of] function, since the compiler plugin does not run against its
+     * Manually generated empowered delegate for [of] function, since the compiler plugin does not run against its
      * own support library.
      */
     @Suppress("FunctionName")
     @JvmSynthetic
-    internal fun <T> of__introspected(expression: T, callOrigin: CallOrigin): Pair<T, Node> =
-      expression to callOrigin.parameters[0]
+    internal fun <T> of__empowered(expression: T, callOrigin: CallOrigin): Node =
+      callOrigin.parameters[0]
   }
 
   sealed class Node {
@@ -67,34 +68,45 @@ class CallOrigin(
 }
 
 fun CallOrigin.toSimpleDiagram(): String = buildString {
-  // TODO compress diagram if intermediate display string ends before next indentation
-  //
-  // Currently:
-  // assert(reallyLongVariableName == "World")
-  //        |                      |
-  //        |                      false
-  //        "Hello"
-  //
-  // Desired:
-  // assert(reallyLongVariableName == "World")
-  //        |                      |
-  //        "Hello"                false
-
   val nodes = listOfNotNull(dispatchReceiver, extensionReceiver) + parameters
   val valuesByRow = nodes.gatherRows(source)
-  for ((row, rowSource) in source.split('\n').withIndex()) {
-    val intermediates = valuesByRow[row].orEmpty().sortedBy { it.indent }
-    val indentations = intermediates.map { it.indent }
+  for ((codeRowIndex, codeRowSource) in source.split('\n').withIndex()) {
+    val intermediates = valuesByRow[codeRowIndex].orEmpty().sortedBy { it.indent }
 
-    if (row != 0) appendLine()
+    if (codeRowIndex != 0) appendLine()
+    append(codeRowSource)
 
-    append(rowSource)
-    if (indentations.isNotEmpty()) {
-      appendLine().indent(indentations, indentations.last() + 1)
-    }
-    for (intermediate in intermediates.asReversed()) {
-      appendLine().indent(indentations, intermediate.indent)
-      append(intermediate.value)
+    if (intermediates.isNotEmpty()) {
+      appendLine()
+      run {
+        var currentIndent = 0
+        for (indent in intermediates.map { it.indent }) {
+          repeat(indent - currentIndent) { append(' ') }
+          append('|')
+          currentIndent = indent + 1
+        }
+      }
+
+      val remaining = intermediates.toMutableList()
+      while (remaining.isNotEmpty()) {
+        appendLine()
+
+        // Figure out which displays will fit on the next row
+        val displayRow = remaining.windowed(2, partialWindows = true)
+          .filter { it.size == 1 || it[0].value.length < (it[1].indent - it[0].indent) }
+          .map { it[0] }
+          .toSet()
+
+        var currentIndent = 0
+        for (intermediate in remaining) {
+          repeat(intermediate.indent - currentIndent) { append(' ') }
+          val display = if (intermediate in displayRow) intermediate.value else "|"
+          append(display)
+          currentIndent = intermediate.indent + display.length
+        }
+
+        remaining -= displayRow.toSet()
+      }
     }
   }
 }
@@ -150,22 +162,4 @@ private fun getResultString(node: CallOrigin.Node): String {
   }
 
   return node.result.toString()
-}
-
-private fun StringBuilder.indent(
-  indentations: List<Int> = emptyList(),
-  indent: Int,
-) {
-  var last = -1
-  for (i in indentations) {
-    if (i == indent) break
-    if (i > last) indent(i - last - 1).append('|')
-    last = i
-  }
-  indent(indent - last - 1)
-}
-
-private fun StringBuilder.indent(indentation: Int): StringBuilder {
-  repeat(indentation) { append(' ') }
-  return this
 }

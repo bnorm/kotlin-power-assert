@@ -1,6 +1,6 @@
-package com.bnorm.power.annotation
+package com.bnorm.empowered
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)
 @MustBeDocumented
-annotation class Introspected
+annotation class Empowered
