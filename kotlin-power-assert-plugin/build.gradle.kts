@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+  java
   kotlin("jvm")
   kotlin("kapt")
   id("org.jetbrains.dokka")
@@ -11,15 +12,28 @@ plugins {
 }
 
 dependencies {
-  compileOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable")
+  compileOnly("org.jetbrains.kotlin:kotlin-compiler")
 
   kapt("com.google.auto.service:auto-service:1.0.1")
   compileOnly("com.google.auto.service:auto-service-annotations:1.0.1")
 
   testImplementation(kotlin("test-junit5"))
-  testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable")
-  testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.5.0")
   testImplementation(enforcedPlatform("org.junit:junit-bom:5.9.1"))
+
+  testImplementation("org.jetbrains.kotlin:kotlin-compiler")
+  testImplementation("org.jetbrains.kotlin:kotlin-reflect")
+  testImplementation("org.jetbrains.kotlin:kotlin-compiler-internal-test-framework")
+  testImplementation("junit:junit:4.13.2")
+
+  testRuntimeOnly("org.jetbrains.kotlin:kotlin-test")
+  testRuntimeOnly("org.jetbrains.kotlin:kotlin-script-runtime")
+  testRuntimeOnly("org.jetbrains.kotlin:kotlin-annotations-jvm")
+
+  testImplementation("org.junit.jupiter:junit-jupiter")
+  testImplementation("org.junit.platform:junit-platform-commons")
+  testImplementation("org.junit.platform:junit-platform-launcher")
+  testImplementation("org.junit.platform:junit-platform-runner")
+  testImplementation("org.junit.platform:junit-platform-suite-api")
 }
 
 tasks.withType<KotlinCompile> {
@@ -30,6 +44,25 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
   useJUnitPlatform()
+  systemProperty("idea.ignore.disabled.plugins", "true")
+  systemProperty("idea.home.path", project.rootDir)
+  doFirst {
+    setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
+    setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib-jdk8", "kotlin-stdlib-jdk8")
+    setLibraryProperty("org.jetbrains.kotlin.test.kotlin-reflect", "kotlin-reflect")
+    setLibraryProperty("org.jetbrains.kotlin.test.kotlin-test", "kotlin-test")
+    setLibraryProperty("org.jetbrains.kotlin.test.kotlin-script-runtime", "kotlin-script-runtime")
+    setLibraryProperty("org.jetbrains.kotlin.test.kotlin-annotations-jvm", "kotlin-annotations-jvm")
+
+    setLibraryProperty("org.opentest4j.opentest4j", "opentest4j")
+    setLibraryProperty("org.junit.jupiter.junit-jupiter-api", "junit-jupiter-api")
+    setLibraryProperty("org.junit.platform.junit-platform-commons", "junit-platform-commons")
+  }
+}
+
+tasks.create<JavaExec>("generateTests") {
+  classpath = sourceSets.test.get().runtimeClasspath
+  mainClass.set("com.bnorm.power.runners.GenerateTestsKt")
 }
 
 tasks.register("sourcesJar", Jar::class) {
@@ -111,4 +144,14 @@ publishing {
       url = uri(rootProject.layout.buildDirectory.dir("localMaven"))
     }
   }
+}
+
+fun Test.setLibraryProperty(propName: String, jarName: String) {
+  val path = project.configurations
+    .testRuntimeClasspath.get()
+    .files
+    .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
+    ?.absolutePath
+    ?: return
+  systemProperty(propName, path)
 }
