@@ -16,9 +16,9 @@
 
 package com.bnorm.power
 
-import com.bnorm.power.diagram.SourceFile
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.name.FqName
@@ -27,10 +27,19 @@ class PowerAssertIrGenerationExtension(
   private val messageCollector: MessageCollector,
   private val functions: Set<FqName>,
 ) : IrGenerationExtension {
+  companion object {
+    private val DEPRECATION_EXCEPTION_MESSAGE =
+      "Starting with Kotlin 2.0.0, kotlin-power-assert is no longer supported. " +
+        "Please switch to the official Kotlin power-assert compiler plugin: https://kotl.in/power-assert" +
+        "\n\n" +
+        """
+          Replace the kotlin-power-assert compiler plugin artifact with one of the following:
+           - 'org.jetbrains.kotlin:kotlin-power-assert-compiler-plugin:<kotlin-version>'
+           - 'org.jetbrains.kotlin:kotlin-power-assert-compiler-plugin-embeddable:<kotlin-version>'
+        """.trimIndent()
+  }
+
   override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-    for (file in moduleFragment.files) {
-      PowerAssertCallTransformer(SourceFile(file), pluginContext, messageCollector, functions)
-        .visitFile(file)
-    }
+    messageCollector.report(CompilerMessageSeverity.ERROR, DEPRECATION_EXCEPTION_MESSAGE)
   }
 }

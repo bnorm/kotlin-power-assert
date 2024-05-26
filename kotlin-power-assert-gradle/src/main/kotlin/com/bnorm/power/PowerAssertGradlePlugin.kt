@@ -16,41 +16,27 @@
 
 package com.bnorm.power
 
+import org.gradle.api.GradleException
+import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
-import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
-import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-class PowerAssertGradlePlugin : KotlinCompilerPluginSupportPlugin {
-  override fun apply(target: Project): Unit = with(target) {
-    extensions.create("kotlinPowerAssert", PowerAssertGradleExtension::class.java)
+class PowerAssertGradlePlugin : Plugin<Project> {
+  companion object {
+    private val DEPRECATION_EXCEPTION_MESSAGE =
+      "Starting with Kotlin 2.0.0, kotlin-power-assert is no longer supported. " +
+        "Please switch to the official Kotlin power-assert compiler plugin: https://kotl.in/power-assert" +
+        "\n\n" +
+        """
+          Replace the kotlin-power-assert Gradle plugin with one of the following:
+          
+          plugins {
+              kotlin("plugin.power-assert") version "<kotlin-version>" // Kts format
+              id 'org.jetbrains.kotlin.plugin.power-assert' version '<kotlin-version>' // Groovy format
+          }
+        """.trimIndent()
   }
 
-  override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean {
-    val project = kotlinCompilation.target.project
-    val extension = project.extensions.getByType(PowerAssertGradleExtension::class.java)
-    return extension.excludedSourceSets.none { it == kotlinCompilation.defaultSourceSet.name }
-  }
-
-  override fun getCompilerPluginId(): String = "com.bnorm.kotlin-power-assert"
-
-  override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
-    groupId = BuildConfig.PLUGIN_GROUP_ID,
-    artifactId = BuildConfig.PLUGIN_ARTIFACT_ID,
-    version = BuildConfig.PLUGIN_VERSION,
-  )
-
-  override fun applyToCompilation(
-    kotlinCompilation: KotlinCompilation<*>,
-  ): Provider<List<SubpluginOption>> {
-    val project = kotlinCompilation.target.project
-    val extension = project.extensions.getByType(PowerAssertGradleExtension::class.java)
-    return project.provider {
-      extension.functions.map {
-        SubpluginOption(key = "function", value = it)
-      }
-    }
+  override fun apply(target: Project) {
+    throw GradleException(DEPRECATION_EXCEPTION_MESSAGE)
   }
 }

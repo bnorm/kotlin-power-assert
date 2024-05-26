@@ -2,6 +2,11 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.bnorm.power/kotlin-power-assert-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.bnorm.power/kotlin-power-assert-plugin)
 
+> [!IMPORTANT]
+> Starting with Kotlin 2.0.0, this compiler plugin has been replaced with an official Kotlin Power-Assert compiler
+> plugin. As such, this compiler plugin is no longer supported, and any usage should be replaced with the official
+> plugin. See https://kotl.in/power-assert for more information on build setup.
+
 Kotlin Compiler Plugin which high-jacks Kotlin assert function calls and
 transforms them similar to [Groovy's Power Assert feature][groovy-power-assert].
 This plugin uses the IR backend for the Kotlin compiler and supports all
@@ -155,19 +160,20 @@ used. Check the table below to find when support for a particular version of
 Kotlin was first introduced. If a version of Kotlin or this plugin is not listed
 it can be assumed to maintain compatibility with the next oldest version listed.
 
-| Kotlin Version | Plugin Version |
-|----------------|----------------|
-| 1.3.60         | 0.1.0          |
-| 1.3.70         | 0.3.0          |
-| 1.4.0          | 0.4.0          |
-| 1.4.20         | 0.6.0          |
-| 1.4.30         | 0.7.0          |
-| 1.5.0          | 0.8.0          |
-| 1.5.10         | 0.9.0          |
-| 1.5.20         | 0.10.0         |
-| 1.6.0          | 0.11.0         |
-| 1.7.0          | 0.12.0         |
-| 1.8.20         | 0.13.0         |
+| Kotlin Version   | Plugin Version                                           |
+|------------------|----------------------------------------------------------|
+| 1.3.60           | 0.1.0                                                    |
+| 1.3.70           | 0.3.0                                                    |
+| 1.4.0            | 0.4.0                                                    |
+| 1.4.20           | 0.6.0                                                    |
+| 1.4.30           | 0.7.0                                                    |
+| 1.5.0            | 0.8.0                                                    |
+| 1.5.10           | 0.9.0                                                    |
+| 1.5.20           | 0.10.0                                                   |
+| 1.6.0            | 0.11.0                                                   |
+| 1.7.0            | 0.12.0                                                   |
+| 1.8.20           | 0.13.0                                                   |
+| 2.0.0 and beyond | Official support by Kotlin: https://kotl.in/power-assert |
 
 ## Kotlin IR
 
