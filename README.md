@@ -7,6 +7,10 @@ transforms them similar to [Groovy's Power Assert feature][groovy-power-assert].
 This plugin uses the IR backend for the Kotlin compiler and supports all
 platforms: JVM, JS, and Native!
 
+## News
+
+Kotlin Power-assert is now an experimental standard compiler plugin. Please use the [current documentation](https://kotlinlang.org/docs/power-assert.html).
+
 ## Example
 
 Given following code:
