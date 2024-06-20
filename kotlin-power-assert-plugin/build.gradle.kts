@@ -29,6 +29,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<Test> {
+  enabled = false
   useJUnitPlatform()
 }
 

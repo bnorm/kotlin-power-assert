@@ -16,6 +16,10 @@
 
 package com.bnorm.power
 
+@Deprecated(
+  message = "Replace with the official Kotlin Power-Assert compiler plugin: https://kotl.in/power-assert",
+  level = DeprecationLevel.ERROR,
+)
 open class PowerAssertGradleExtension {
   var functions: List<String> = listOf("kotlin.assert")
   var excludedSourceSets: List<String> = listOf()
